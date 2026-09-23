@@ -2,14 +2,15 @@ const input = document.getElementById('skill-input');
 const addBttn = document.getElementById('addSkillBtn');
 const list = document.getElementById('skills-list');
 
-// Use saved skills if there are any, otherwise start from the ones in the HTML
-const saved = localStorage.getItem('skills');
-let skills = saved
-    ? JSON.parse(saved)
-    : [...list.querySelectorAll('li')].map(li => li.textContent.trim());
+// Always start from the skills written in the HTML. Adding and removing is a demo:
+// changes only last until the page is reloaded, so every visitor sees the real list
+let skills = [...list.querySelectorAll('li')].map(li => li.textContent.trim());
 
-function save() {
-    localStorage.setItem('skills', JSON.stringify(skills));
+// An earlier version saved the list in the browser, so clear any old copy
+try {
+    localStorage.removeItem('skills');
+} catch {
+    // storage is blocked, so nothing was saved there anyway
 }
 
 function render() {
@@ -33,7 +34,6 @@ function addSkill() {
     if(!value) return;
     skills.push(value);
     input.value = '';
-    save();
     render();
 }
 
@@ -48,7 +48,6 @@ list.addEventListener('click', (e) => {
     if(e.target.classList.contains('remove-btn')) {
         const index = e.target.dataset.index;
         skills.splice(index, 1);
-        save();
         render();
     }
 });

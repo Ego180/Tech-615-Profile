@@ -234,6 +234,11 @@ a {
 }
 .chips li:hover .remove { opacity: 1; }
 
+.skills-note {
+    margin-top: 12px;
+    font-size: 0.85rem;
+}
+
 .plain-list {
     margin: 0;
     padding-left: 1.1em;
