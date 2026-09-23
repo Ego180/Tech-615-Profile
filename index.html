@@ -3,52 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <metaa name = "author" content = "Eghosa Ogua">
-    <meta name = "description" content = "This is a simple HTML page">
-    <title>My Profile</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="author" content="Eghosa Ogua">
+    <meta name="description" content="Profile of Eghosa Ogua">
+    <title>Eghosa Ogua | Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="profileStyle.css">
 </head>
 <body>
 
-    <nav>
-        <ul>
-            <li><a href="index.html">Go to profile</a></li>
-            <li><a href="projects.html">Go to projects</a></li>
-            <li><a href="https://www.linkedin.com/" target="_blank">My LinkedIn</a></li>
-        </ul>
+    <nav class="site-nav">
+        <div class="container">
+            <a class="brand" href="index.html">Eghosa<span>.</span></a>
+            <ul>
+                <li><a class="active" href="index.html">Profile</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
     </nav>
-    
-    <header>
-        <h1>Eghosa Ogua</h1>
-        <h2>My Profile</h2>
-        <img alt="Profile Picture" src="images/profile-picture.jpg">
+
+    <header class="container hero">
+        <div>
+            <p class="eyebrow">My Profile</p>
+            <h1>Eghosa Ogua</h1>
+            <p>A short intro about yourself goes here: what you study, what you enjoy building, and what you're looking for next.</p>
+        </div>
+        <img class="avatar" alt="Profile picture of Eghosa Ogua" src="images/Eghosa Headshot.jpg">
     </header>
-    
-    <div>
-    <h4>My Skills</h4>
-        <p> <strong>HTML, CSS, JavaScript, React, Node.js</strong></p>
-        <p> <strong>My Goals</strong></p>
-    
-    </div>
 
-    <div>
-    <h4>My Hobbies</h4>
-    <ul>
-        <li>Reading</li>
-        <li>Traveling</li>
-        <li>Playing Sports</li>
-    </ul>
-    </div>
+    <main class="container layout">
+        <div class="content">
+            <section class="card wide">
+                <h3>My Skills</h3>
+                <ul class="chips">
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                    <li>React</li>
+                    <li>Node.js</li>
+                    <li>Python</li>
+                </ul>
+            </section>
 
-    <div>
-        <h4>CSS</h4>
-        <h4>Goals </h4>
-        <h3>Search for News:</h3>
-    </div>
+            <section class="card">
+                <h3>My Goals</h3>
+                <p>Write your goals here. For example, what you want to learn this year or where you want your career to go.</p>
+            </section>
 
-    <footer>
-        <p>&copy; 2026 Eghosa Ogua. All rights reserved.</p>
+            <section class="card">
+                <h3>My Hobbies</h3>
+                <ul class="plain-list">
+                    <li>Reading</li>
+                    <li>Traveling</li>
+                    <li>Playing Sports</li>
+                </ul>
+            </section>
+
+            <section class="card wide">
+                <h3>Search for News</h3>
+                <form class="search-form" action="https://www.bbc.co.uk/search" method="get" target="_blank">
+                    <label for="mysearch">Search:</label>
+                    <input id="mysearch" type="text" name="q" value="Telford">
+                    <button class="btn" type="submit">Search</button>
+                </form>
+            </section>
+        </div>
+
+        <aside class="sidebar">
+            <div class="vinyl-widget" id="vinyl">
+                <p class="widget-label">Now spinning</p>
+
+                <div class="turntable">
+                    <div class="record-wrap">
+                        <div class="record">
+                            <div class="record-label"><span class="spindle"></span></div>
+                        </div>
+                    </div>
+                    <div class="tonearm"></div>
+                </div>
+
+                <div class="track-info">
+                    <p class="track-title" id="track-title">&nbsp;</p>
+                    <p class="track-artist" id="track-artist">&nbsp;</p>
+                </div>
+
+                <input class="progress" id="progress" type="range" min="0" max="100" step="0.1" value="0" aria-label="Seek">
+                <div class="times">
+                    <span id="time-current">0:00</span>
+                    <span id="time-duration">0:00</span>
+                </div>
+
+                <div class="controls">
+                    <button id="prev" type="button" aria-label="Previous track">
+                        <svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg>
+                    </button>
+                    <button id="play" class="play" type="button" aria-label="Play">
+                        <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+                        <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+                    </button>
+                    <button id="next" type="button" aria-label="Next track">
+                        <svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg>
+                    </button>
+                    <div class="volume" id="volume">
+                        <button id="volume-toggle" type="button" aria-label="Volume" aria-expanded="false" aria-controls="volume-popover">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 9h4l5-4v14l-5-4H3z"/>
+                                <path class="line icon-volume-on" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+                                <path class="line icon-volume-off" d="M16 9l6 6M22 9l-6 6"/>
+                            </svg>
+                        </button>
+                        <div class="volume-popover" id="volume-popover">
+                            <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volume level">
+                        </div>
+                    </div>
+                </div>
+
+                <audio id="audio" preload="metadata"></audio>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Eghosa Ogua. All rights reserved.</p>
+        </div>
     </footer>
 
+    <canvas class="graffiti" id="graffiti" aria-hidden="true"></canvas>
+
+    <script src="vinyl.js"></script>
+    <script src="graffiti.js"></script>
 </body>
 </html>

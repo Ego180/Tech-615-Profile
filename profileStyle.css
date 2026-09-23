@@ -1,0 +1,690 @@
+/* ==========================================================
+   Palette — three colours only
+   ========================================================== */
+:root {
+    --paper: #F4F1EC;   /* background */
+    --ink: #1D1D1F;     /* text, lines, the record */
+    --accent: #2563EB;  /* highlights, record label */
+
+    /* Tints of the same three colours (not new colours) */
+    --ink-soft: rgba(29, 29, 31, 0.65);
+    --ink-line: rgba(29, 29, 31, 0.12);
+    --accent-soft: rgba(37, 99, 235, 0.12);
+
+    --radius: 16px;
+    --max-width: 1100px;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-head);
+    line-height: 1.15;
+    margin: 0 0 0.5em;
+}
+
+a {
+    color: inherit;
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ==========================================================
+   Navigation
+   ========================================================== */
+.site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(244, 241, 236, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--ink-line);
+}
+
+.site-nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.brand {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.brand span {
+    color: var(--accent);
+}
+
+.site-nav ul {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.site-nav a {
+    text-decoration: none;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+}
+
+/* ==========================================================
+   Hero (name + round profile picture top right)
+   ========================================================== */
+.hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: 64px 0 48px;
+}
+
+.eyebrow {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 12px;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin: 0;
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--accent);
+    outline: 1px solid var(--ink-line);
+    outline-offset: 6px;
+}
+
+/* ==========================================================
+   Page layout: content + sidebar
+   ========================================================== */
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 32px;
+    align-items: start;
+    padding-bottom: 64px;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card {
+    border: 1px solid var(--ink-line);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.card.wide {
+    grid-column: 1 / -1;
+}
+
+.card h3 {
+    font-size: 1.1rem;
+}
+
+.card p {
+    margin: 0 0 0.75em;
+    color: var(--ink-soft);
+}
+
+.card p:last-child {
+    margin-bottom: 0;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chips li {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+}
+
+.plain-list {
+    margin: 0;
+    padding-left: 1.1em;
+    color: var(--ink-soft);
+}
+
+.plain-list li::marker {
+    color: var(--accent);
+}
+
+/* Search form */
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-form label {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px 14px;
+    font: inherit;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink-line);
+    border-radius: 999px;
+}
+
+.search-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.btn {
+    font: inherit;
+    font-weight: 600;
+    padding: 10px 20px;
+    color: var(--paper);
+    background: var(--ink);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: var(--accent);
+}
+
+/* ==========================================================
+   Vinyl widget
+   ========================================================== */
+.sidebar {
+    position: sticky;
+    /* Leaves room above the card for the graffiti character to stand */
+    top: 128px;
+}
+
+/* Graffiti animation layer, drawn over the page around the vinyl card */
+.graffiti {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.vinyl-widget {
+    border: 1px solid var(--ink-line);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+}
+
+.widget-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+}
+
+.turntable {
+    position: relative;
+    width: 170px;
+    height: 150px;
+    margin: 0 auto 16px;
+}
+
+.record-wrap {
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(29, 29, 31, 0.25);
+}
+
+/* Light reflection — stays still while the record turns underneath */
+.record-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 30deg,
+        transparent 0deg,
+        rgba(244, 241, 236, 0.12) 30deg,
+        transparent 60deg,
+        transparent 180deg,
+        rgba(244, 241, 236, 0.08) 210deg,
+        transparent 240deg
+    );
+    pointer-events: none;
+}
+
+.record {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+        repeating-radial-gradient(
+            circle,
+            var(--ink) 0px,
+            var(--ink) 2px,
+            rgba(244, 241, 236, 0.06) 3px,
+            var(--ink) 4px
+        );
+    display: grid;
+    place-items: center;
+    animation: spin 2.4s linear infinite;
+    animation-play-state: paused;
+}
+
+.record-label {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: grid;
+    place-items: center;
+    position: relative;
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--paper);
+}
+
+/* Text sits off-centre so you can see the label turning */
+.record-label::before {
+    content: "EO";
+    position: absolute;
+    top: 6px;
+}
+
+.spindle {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--paper);
+}
+
+.tonearm {
+    position: absolute;
+    right: 12px;
+    top: 4px;
+    width: 4px;
+    height: 95px;
+    background: var(--ink-soft);
+    border-radius: 2px;
+    transform-origin: 50% 4px;
+    transform: rotate(0deg);
+    transition: transform 0.6s ease;
+}
+
+/* Pivot */
+.tonearm::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin-left: -8px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 3px solid var(--paper);
+}
+
+/* Head */
+.tonearm::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 10px;
+    height: 16px;
+    margin-left: -5px;
+    border-radius: 3px;
+    background: var(--accent);
+}
+
+.vinyl-widget.is-playing .record {
+    animation-play-state: running;
+}
+
+.vinyl-widget.is-playing .tonearm {
+    transform: rotate(22deg);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.track-info {
+    min-height: 44px;
+    margin-bottom: 8px;
+}
+
+.track-title {
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-artist {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.progress {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+}
+
+.controls button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--ink-line);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.controls button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.controls .play {
+    width: 48px;
+    height: 48px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+}
+
+.controls .play:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--paper);
+}
+
+.controls button:disabled,
+.progress:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.controls svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.icon-pause,
+.vinyl-widget.is-playing .icon-play {
+    display: none;
+}
+
+/* Volume: button with a pop-up slider */
+.volume {
+    position: relative;
+}
+
+.controls svg .line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.icon-volume-off,
+.volume.is-muted .icon-volume-on {
+    display: none;
+}
+
+.volume.is-muted .icon-volume-off {
+    display: inline;
+}
+
+.volume.is-open > button {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.volume-popover {
+    position: absolute;
+    right: -8px;
+    bottom: calc(100% + 10px);
+    z-index: 2;
+    padding: 10px 14px;
+    background: var(--paper);
+    border: 1px solid var(--ink-line);
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(29, 29, 31, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+}
+
+.volume.is-open .volume-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.volume-popover input {
+    display: block;
+    width: 110px;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.vinyl-widget.is-playing .icon-pause {
+    display: block;
+}
+
+/* ==========================================================
+   Projects page
+   ========================================================== */
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--ink-line);
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 16px 20px;
+}
+
+th {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--ink-line);
+}
+
+tbody tr + tr td {
+    border-top: 1px solid var(--ink-line);
+}
+
+tbody tr:hover {
+    background: var(--accent-soft);
+}
+
+td:first-child {
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+.projects {
+    padding-bottom: 64px;
+}
+
+/* ==========================================================
+   Footer
+   ========================================================== */
+.site-footer {
+    border-top: 1px solid var(--ink-line);
+    padding: 24px 0;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 860px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    .site-nav ul {
+        gap: 16px;
+    }
+
+    .brand {
+        display: none;
+    }
+
+    .hero {
+        padding: 40px 0 32px;
+        gap: 20px;
+    }
+
+    .avatar {
+        width: 96px;
+        height: 96px;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+}
