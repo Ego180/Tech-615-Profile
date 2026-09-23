@@ -37,7 +37,11 @@
         <div class="content">
             <section class="card wide">
                 <h3>My Skills</h3>
-                <ul class="chips">
+                <div class="skills-input">
+                    <input type="text" id="skill-input" placeholder="Add a skill and press Enter">
+                    <button id="addSkillBtn" class="btn">Add</button>
+                </div>
+                <ul class="chips" id="skills-list">
                     <li>HTML</li>
                     <li>CSS</li>
                     <li>JavaScript</li>
@@ -138,5 +142,6 @@
 
     <script src="vinyl.js"></script>
     <script src="graffiti.js"></script>
+    <script src="addSkills.js" defer></script>
 </body>
 </html>

@@ -209,6 +209,31 @@ a {
     border-radius: 999px;
 }
 
+.chips li .remove-btn {
+    margin-left: 6px;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.chips li:hover .remove-btn {
+    opacity: 1;
+}
+.chips li .remove {
+    margin-left: 6px;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.chips li:hover .remove { opacity: 1; }
+
 .plain-list {
     margin: 0;
     padding-left: 1.1em;
@@ -634,6 +659,56 @@ td:first-child {
     padding-bottom: 64px;
 }
 
+/* JavaScript game, played in an iframe on the projects page */
+.game-card {
+    scroll-margin-top: 88px; /* clears the sticky nav when jumping to #game */
+}
+
+/* Keep the game still while the mouse is over it */
+.game-card:hover {
+    transform: none;
+}
+
+.game-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-bottom: 20px;
+}
+
+.game-card-head > div {
+    flex: 1 1 320px;
+}
+
+.game-card-head p {
+    max-width: 62ch;
+}
+
+.btn-outline {
+    display: inline-block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink-line);
+}
+
+.btn-outline:hover {
+    color: var(--accent);
+    background: transparent;
+    border-color: var(--accent);
+}
+
+.game-frame {
+    display: block;
+    width: 100%;
+    height: 600px; /* replaced by the game's real height once it loads */
+    border: 0;
+}
+
 /* ==========================================================
    Footer
    ========================================================== */
@@ -686,5 +761,13 @@ td:first-child {
 
     .content {
         grid-template-columns: 1fr;
+    }
+
+    .game-card {
+        padding: 20px 12px 12px;
+    }
+
+    .game-frame {
+        height: 780px;
     }
 }

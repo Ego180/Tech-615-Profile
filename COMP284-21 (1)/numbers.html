@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<!-- numbers.html -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Treasure Hunter: a turn-based JavaScript treasure race against a CPU opponent.">
+		<title>Treasure Hunter</title>
+		<script>
+			// Inside the projects page <iframe> the game drops its full-page layout
+			if (window.self !== window.top) document.documentElement.classList.add('is-embedded');
+		</script>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="numbers.css">
+	</head>
+	<body>
+		<a class="back-link" href="../projects.html">&larr; Back to projects</a>
+
+		<main class="app" id="app">
+			<div class="game">
+
+				<!-- Round counter, scores and bags -->
+				<div class="hud">
+					<div class="round">
+						<div class="round-head">
+							<span>Round <strong id="round-text">1 / 40</strong></span>
+							<span class="badge" id="difficulty-badge">Medium</span>
+						</div>
+						<div class="meter"><span id="round-meter"></span></div>
+					</div>
+
+					<section class="scorecard player" id="card-player" aria-label="Your score">
+						<div class="scorecard-head">
+							<span class="swatch"></span>
+							<span class="name">You</span>
+							<span class="score" id="score-player">0</span>
+						</div>
+						<div class="bag" id="bag-player">
+							<span class="bag-label">Bag</span>
+							<span class="slot"></span><span class="slot"></span><span class="slot"></span>
+						</div>
+					</section>
+
+					<section class="scorecard cpu" id="card-cpu" aria-label="CPU score">
+						<div class="scorecard-head">
+							<span class="swatch"></span>
+							<span class="name">CPU <span class="thinking" aria-hidden="true"><i></i><i></i><i></i></span></span>
+							<span class="score" id="score-cpu">0</span>
+						</div>
+						<div class="bag" id="bag-cpu">
+							<span class="bag-label">Bag</span>
+							<span class="slot"></span><span class="slot"></span><span class="slot"></span>
+						</div>
+					</section>
+				</div>
+
+				<!-- The board: tiles underneath, treasures and characters on top -->
+				<div class="board-area">
+					<div class="board" id="board" tabindex="-1" role="application" aria-label="Treasure Hunter board. Move with W A S D or the arrow keys.">
+						<div class="tiles" id="tiles"></div>
+						<div class="pieces" id="pieces"></div>
+					</div>
+					<div class="toasts" id="toasts" aria-live="polite"></div>
+					<div class="focus-hint" id="focus-hint" hidden>Click the board to keep playing</div>
+				</div>
+
+				<!-- Movement pad, scoring reminder and game buttons -->
+				<div class="controls">
+					<div class="dpad" id="dpad" role="group" aria-label="Move">
+						<button type="button" data-dir="up" aria-label="Move up"><svg viewBox="0 0 24 24"><path d="M12 7l6 9H6z"/></svg></button>
+						<button type="button" data-dir="left" aria-label="Move left"><svg viewBox="0 0 24 24"><path d="M7 12l9-6v12z"/></svg></button>
+						<button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24"><path d="M12 17L6 8h12z"/></svg></button>
+						<button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24"><path d="M17 12l-9 6V6z"/></svg></button>
+					</div>
+					<p class="keys-hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrow keys</p>
+					<ul class="legend" aria-label="How a full bag scores">
+						<li><span>Three of a kind</span><em>+300</em></li>
+						<li><span>Pair</span><em>+200</em></li>
+						<li><span>Run <small>e.g. 3&middot;4&middot;5</small></span><em>+100</em></li>
+						<li class="legend-note">plus the treasure values</li>
+					</ul>
+					<div class="actions">
+						<button type="button" class="btn-ghost" id="btn-restart">Restart</button>
+						<button type="button" class="btn-ghost" id="btn-end">End game</button>
+						<button type="button" class="btn-ghost" id="btn-menu">Menu</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Loading screen, which turns into the difficulty menu -->
+			<section class="overlay" id="title-screen" data-stage="loading" aria-labelledby="title-heading">
+				<div class="sheet">
+					<div class="gem-row" aria-hidden="true">
+						<span class="mini-gem" data-v="1" style="--i: 0"></span>
+						<span class="mini-gem" data-v="2" style="--i: 1"></span>
+						<span class="mini-gem" data-v="3" style="--i: 2"></span>
+						<span class="mini-gem" data-v="4" style="--i: 3"></span>
+						<span class="mini-gem" data-v="5" style="--i: 4"></span>
+						<span class="mini-gem" data-v="6" style="--i: 5"></span>
+					</div>
+					<p class="eyebrow">COMP284 &middot; JavaScript game</p>
+					<h1 id="title-heading">Treasure <span>Hunter</span></h1>
+					<p class="tagline">Race the CPU for treasure. Fill your bag with three and chase the big combos.</p>
+
+					<div class="loader" id="loader">
+						<div class="meter"><span id="loader-meter"></span></div>
+						<p id="loader-text">Loading&hellip;</p>
+					</div>
+
+					<form class="menu" id="menu">
+						<fieldset class="levels">
+							<legend>Choose your opponent</legend>
+							<div class="level-options">
+								<label class="level">
+									<input type="radio" name="difficulty" value="easy">
+									<span class="level-body">
+										<span class="level-name">Easy <span class="pips" data-level="1"><i></i><i></i><i></i></span></span>
+										<span class="level-desc">Grabs whatever is close and often wanders off.</span>
+										<span class="level-best" data-best="easy"></span>
+									</span>
+								</label>
+								<label class="level">
+									<input type="radio" name="difficulty" value="medium" checked>
+									<span class="level-body">
+										<span class="level-name">Medium <span class="pips" data-level="2"><i></i><i></i><i></i></span></span>
+										<span class="level-desc">Hunts pairs and runs, but only thinks one treasure ahead.</span>
+										<span class="level-best" data-best="medium"></span>
+									</span>
+								</label>
+								<label class="level">
+									<input type="radio" name="difficulty" value="hard">
+									<span class="level-body">
+										<span class="level-name">Hard <span class="pips" data-level="3"><i></i><i></i><i></i></span></span>
+										<span class="level-desc">Plans its whole bag for the most points per move, and avoids races it can&rsquo;t win.</span>
+										<span class="level-best" data-best="hard"></span>
+									</span>
+								</label>
+							</div>
+						</fieldset>
+
+						<details class="how">
+							<summary>How to play</summary>
+							<ul>
+								<li>You and the CPU take turns moving one square. Use <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, the arrow keys, the pad, or swipe or tap the board.</li>
+								<li>Step on a treasure (worth 1&ndash;6) to put it in your bag. Every third treasure scores the bag: three of a kind +300, a pair +200, a run +100, plus the treasure values.</li>
+								<li>Rocks and the CPU block your way. A new treasure appears whenever one is taken. Glowing treasures match one in your bag.</li>
+								<li>The highest score after 40 rounds wins. Unfinished bags count at face value.</li>
+							</ul>
+						</details>
+
+						<button class="btn-primary" type="submit">Start game</button>
+					</form>
+				</div>
+			</section>
+
+			<!-- End of game -->
+			<section class="overlay" id="result-screen" aria-labelledby="result-heading" hidden>
+				<div class="sheet result" id="result-sheet">
+					<p class="eyebrow" id="result-eyebrow">Game over</p>
+					<h2 id="result-heading">You win!</h2>
+					<p class="result-line" id="result-line"></p>
+					<p class="new-best" id="result-new-best" hidden>New personal best!</p>
+					<div class="result-scores">
+						<div class="result-side player" id="result-side-player">
+							<span class="result-who"><span class="swatch"></span>You</span>
+							<strong id="result-player">0</strong>
+						</div>
+						<div class="result-side cpu" id="result-side-cpu">
+							<span class="result-who"><span class="swatch"></span>CPU</span>
+							<strong id="result-cpu">0</strong>
+						</div>
+					</div>
+					<table class="result-stats">
+						<thead>
+							<tr><th scope="col"><span class="visually-hidden">Stat</span></th><th scope="col">You</th><th scope="col">CPU</th></tr>
+						</thead>
+						<tbody id="result-stats"></tbody>
+					</table>
+					<div class="result-actions">
+						<button class="btn-primary" type="button" id="btn-again">Play again</button>
+						<button class="btn-ghost" type="button" id="btn-change">Change difficulty</button>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<script src="numbers.js"></script>
+	</body>
+</html>
+
+<!-- working link https://student.csc.liv.ac.uk/~sgeogua/numbers.html-->

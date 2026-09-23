@@ -6,8 +6,8 @@
 const PLAYLIST = [
     // { title: "Song Title", artist: "Artist Name", src: "music/song-file.mp3" },
     {title : "Mel 106" , artist : "Eghosa " , src : "music/mel106 87 BPM.mp3"},
-    {title : "Mel 121" , artist : "Eghosa " , src : "music/mel 121 132Bpm.mp3"},
     {title : "Mel 129" , artist : "Eghosa " , src : "music/mel 129 103 BPM.mp3"},
+    {title : "Mel 121" , artist : "Eghosa " , src : "music/mel 121 132Bpm.mp3"},
     { title : "Mel 91" , artist : "Eghosa " , src : "music/mel 91 142 BPM.mp3"},
     { title : "Mel 92" , artist : "Eghosa + Friends" , src : "music/mel_92_132 BPM.mp3"},
     { title : "Scribz" , artist : "Eghosa " , src : "music/scribz riley remixed.mp3"}, 

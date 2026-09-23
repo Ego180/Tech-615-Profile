@@ -1,0 +1,1309 @@
+/* ==========================================================
+   Treasure Hunter — numbers.css
+   Uses the portfolio's palette and fonts so the game looks at
+   home inside projects.html, and still works as its own page.
+   ========================================================== */
+:root {
+    --paper: #F4F1EC;
+    --ink: #1D1D1F;
+    --accent: #2563EB;
+
+    --ink-soft: rgba(29, 29, 31, 0.65);
+    --ink-faint: rgba(29, 29, 31, 0.3);
+    --ink-line: rgba(29, 29, 31, 0.12);
+    --accent-soft: rgba(37, 99, 235, 0.12);
+
+    /* Board surfaces (tints of the paper colour) */
+    --board: #E6E1D8;
+    --tile: #FBFAF7;
+    --tile-hover: #E6EDFC;
+
+    --move-time: 170ms;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
+}
+
+/* Treasure colours: the higher the value, the richer the blue */
+[data-v="1"] { --gem: #DDE5F5; --gem-text: var(--ink); }
+[data-v="2"] { --gem: #C3D3F4; --gem-text: var(--ink); }
+[data-v="3"] { --gem: #A1BBF2; --gem-text: var(--ink); }
+[data-v="4"] { --gem: #769CF0; --gem-text: var(--ink); }
+[data-v="5"] { --gem: #4C7EED; --gem-text: #fff; }
+[data-v="6"] { --gem: #2563EB; --gem-text: #fff; }
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Embedded in the projects page: no page chrome, height fits the game */
+.is-embedded body {
+    min-height: 0;
+    padding: 2px;
+    display: block;
+    background: transparent;
+}
+
+.is-embedded .back-link {
+    display: none;
+}
+
+.back-link {
+    width: 100%;
+    max-width: 900px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+button {
+    font: inherit;
+    color: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+kbd {
+    display: inline-block;
+    min-width: 20px;
+    margin: 0 1px;
+    padding: 0 5px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--ink-line);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.btn-primary {
+    font-weight: 600;
+    padding: 12px 24px;
+    color: var(--paper);
+    background: var(--ink);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+    background: var(--accent);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.btn-ghost {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid var(--ink-line);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.meter {
+    height: 6px;
+    overflow: hidden;
+    background: var(--ink-line);
+    border-radius: 999px;
+}
+
+.meter span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    border-radius: inherit;
+    transition: width 0.35s ease;
+}
+
+/* ==========================================================
+   Layout: board on the left, scores and controls on the right
+   ========================================================== */
+/* The game and the overlays share one grid cell, so the page is always tall
+   enough for whichever is bigger (a phone menu can be taller than the board) */
+.app {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.game,
+.overlay {
+    grid-area: 1 / 1;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: minmax(0, 560px) minmax(240px, 272px);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "board hud"
+        "board controls";
+    justify-content: center;
+    gap: 16px 24px;
+}
+
+.hud {
+    grid-area: hud;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+}
+
+.board-area {
+    grid-area: board;
+    position: relative;
+    align-self: start;
+}
+
+.controls {
+    grid-area: controls;
+    display: grid;
+    grid-template-areas:
+        "dpad"
+        "hint"
+        "legend"
+        "actions";
+    gap: 12px;
+    align-content: start;
+}
+
+/* ==========================================================
+   Round counter and scorecards
+   ========================================================== */
+.round {
+    display: grid;
+    gap: 8px;
+}
+
+.round-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.round-head strong {
+    margin-left: 4px;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.badge {
+    padding: 3px 10px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 999px;
+}
+
+.scorecard {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.scorecard.player.is-turn {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.scorecard.cpu.is-turn {
+    border-color: var(--ink-faint);
+    box-shadow: 0 0 0 3px var(--ink-line);
+}
+
+.scorecard-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.swatch {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+.cpu .swatch {
+    background: var(--ink);
+    border-radius: 4px;
+}
+
+.name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.score {
+    margin-left: auto;
+    font-family: var(--font-head);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.scorecard.is-scoring .score {
+    animation: score-pop 600ms ease;
+}
+
+.thinking {
+    display: inline-flex;
+    gap: 3px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.thinking i {
+    width: 4px;
+    height: 4px;
+    background: var(--ink-soft);
+    border-radius: 50%;
+    animation: think 900ms ease-in-out infinite;
+}
+
+.thinking i:nth-child(2) { animation-delay: 150ms; }
+.thinking i:nth-child(3) { animation-delay: 300ms; }
+
+.cpu.is-turn .thinking {
+    opacity: 1;
+}
+
+.bag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.bag-label {
+    margin-right: auto;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.slot {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    border: 1.5px dashed var(--ink-faint);
+    border-radius: 8px;
+}
+
+.slot.is-filled {
+    color: var(--gem-text);
+    background: var(--gem);
+    border: 1.5px solid transparent;
+    animation: slot-pop 260ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.bag.is-scored .slot {
+    animation: slot-flash 800ms ease;
+}
+
+/* ==========================================================
+   Board
+   ========================================================== */
+.board {
+    --n: 10;
+    --gap: 4px;
+    --pad: 6px;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: var(--pad);
+    container-type: inline-size;
+    background: var(--board);
+    border-radius: 18px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        0 1px 2px rgba(29, 29, 31, 0.06),
+        0 18px 36px -18px rgba(29, 29, 31, 0.35);
+    outline: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Swipes move the hunter instead of scrolling while a game is on */
+.board.is-playing {
+    touch-action: none;
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--n), minmax(0, 1fr));
+    gap: var(--gap);
+    height: 100%;
+}
+
+.tile {
+    position: relative;
+    background: var(--tile);
+    border-radius: 22%;
+    box-shadow: inset 0 -2px 0 rgba(29, 29, 31, 0.06);
+    transition: background 0.15s;
+}
+
+.tile.rock {
+    background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.16), transparent 50%),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 3px, transparent 3px 7px),
+        var(--ink);
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Squares the hunter can step onto this turn */
+.board.is-playing .tile.is-option {
+    cursor: pointer;
+}
+
+.tile.is-option::after {
+    content: "";
+    position: absolute;
+    inset: 42%;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.28;
+}
+
+.tile.is-option:hover {
+    background: var(--tile-hover);
+}
+
+/* Treasures, characters and score pop-ups sit on a layer above the tiles.
+   Each piece is one tile in size and is moved with `translate`, so moves glide. */
+.pieces {
+    position: absolute;
+    inset: var(--pad);
+    pointer-events: none;
+}
+
+.piece {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc((100% - (var(--n) - 1) * var(--gap)) / var(--n));
+    height: calc((100% - (var(--n) - 1) * var(--gap)) / var(--n));
+    translate:
+        calc(var(--c) * (100% + var(--gap)))
+        calc(var(--r) * (100% + var(--gap)));
+}
+
+/* Treasure gems */
+.treasure {
+    z-index: 1;
+    display: grid;
+    place-items: center;
+}
+
+.gem {
+    position: absolute;
+    inset: 21%;
+    rotate: 45deg;
+    background: var(--gem);
+    border-radius: 24%;
+    box-shadow:
+        inset 0 -3px 0 rgba(29, 29, 31, 0.12),
+        inset 0 2px 0 rgba(255, 255, 255, 0.35),
+        0 3px 8px -3px rgba(29, 29, 31, 0.35);
+}
+
+.treasure .value {
+    position: relative;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-size: max(11px, 3.4cqi);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gem-text);
+}
+
+/* Treasures that match one in the player's bag */
+.treasure.is-hint .gem {
+    box-shadow:
+        0 0 0 1.5px var(--tile),
+        0 0 0 3px var(--accent),
+        0 4px 12px -2px rgba(37, 99, 235, 0.55);
+    animation: hint 1.4s ease-in-out infinite;
+}
+
+.treasure.is-new {
+    animation: spawn 420ms cubic-bezier(0.2, 1.5, 0.4, 1) 160ms both;
+}
+
+.treasure.is-collected {
+    animation: collect 300ms ease-in forwards;
+}
+
+/* Characters */
+.token {
+    --lx: 0;
+    --ly: 1;
+    z-index: 2;
+    transition: translate var(--move-time) cubic-bezier(0.25, 0.8, 0.35, 1);
+}
+
+.token[data-facing="up"] { --lx: 0; --ly: -1; }
+.token[data-facing="down"] { --lx: 0; --ly: 1; }
+.token[data-facing="left"] { --lx: -1; --ly: 0; }
+.token[data-facing="right"] { --lx: 1; --ly: 0; }
+
+.token-body {
+    position: absolute;
+    inset: 11%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14%;
+    box-shadow:
+        0 3px 0 rgba(0, 0, 0, 0.2),
+        0 8px 14px -6px rgba(29, 29, 31, 0.55);
+}
+
+.token.player .token-body {
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+.token.cpu .token-body {
+    background: var(--ink);
+    border-radius: 28%;
+}
+
+.eye {
+    position: relative;
+    width: 26%;
+    aspect-ratio: 1;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.token.player .eye {
+    animation: blink 5s infinite;
+}
+
+.eye::after {
+    content: "";
+    position: absolute;
+    inset: 26%;
+    background: var(--ink);
+    border-radius: 50%;
+    translate: calc(var(--lx) * 45%) calc(var(--ly) * 45%);
+    transition: translate 0.15s;
+}
+
+/* The CPU gets a robot visor instead of round eyes */
+.token.cpu .eye {
+    width: 22%;
+    height: 12%;
+    aspect-ratio: auto;
+    background: var(--paper);
+    border-radius: 2px;
+    translate: calc(var(--lx) * 12%) calc(var(--ly) * 60%);
+    transition: translate 0.15s, background 0.2s;
+}
+
+.token.cpu .eye::after {
+    content: none;
+}
+
+.token.cpu.is-turn .eye {
+    background: #8FB0F5;
+}
+
+/* Pulsing ring under the hunter when it is your move */
+.token.player::before {
+    content: "";
+    position: absolute;
+    inset: 2%;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.token.player.is-turn::before {
+    animation: ring 1.4s ease-in-out infinite;
+}
+
+.token.is-hopping .token-body {
+    animation: hop var(--move-time) ease-out;
+}
+
+.token.is-bumping .token-body {
+    animation: bump 240ms ease-out;
+}
+
+/* "+212" when a bag is scored */
+.float {
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-size: max(14px, 3.6cqi);
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    text-shadow: 0 0 6px var(--paper), 0 1px 0 var(--paper);
+    animation: float-up 1100ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+.float.cpu {
+    color: var(--ink);
+}
+
+/* Board reveal when a game starts: a wave from the top-left corner */
+.board.is-intro .tile {
+    animation: tile-in 420ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+    animation-delay: calc(var(--wave) * 20ms);
+}
+
+.board.is-intro .piece {
+    animation: piece-in 380ms cubic-bezier(0.2, 1.5, 0.4, 1) both;
+    animation-delay: calc((var(--r) + var(--c)) * 20ms + 200ms);
+}
+
+/* ==========================================================
+   Messages on the board
+   ========================================================== */
+.toasts {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    z-index: 6;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    width: max-content;
+    max-width: calc(100% - 24px);
+    translate: -50% 0;
+    pointer-events: none;
+}
+
+.toasts.at-bottom {
+    top: auto;
+    bottom: 12px;
+}
+
+.toast {
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: 999px;
+    box-shadow: 0 10px 24px -10px rgba(29, 29, 31, 0.6);
+    animation: toast-drop 220ms cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.toast.player {
+    background: var(--accent);
+}
+
+.toast em {
+    font-style: normal;
+    opacity: 0.75;
+    margin: 0 6px;
+}
+
+.toast.is-leaving {
+    animation: toast-out 220ms ease forwards;
+}
+
+.focus-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    z-index: 6;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: 999px;
+    translate: -50% 0;
+    pointer-events: none;
+    box-shadow: 0 10px 24px -10px rgba(29, 29, 31, 0.6);
+    animation: toast-in 220ms ease both;
+}
+
+/* ==========================================================
+   Controls
+   ========================================================== */
+.dpad {
+    grid-area: dpad;
+    display: grid;
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(2, 44px);
+    grid-template-areas:
+        ".    up   ."
+        "left down right";
+    gap: 6px;
+    justify-content: center;
+}
+
+.dpad button {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, scale 0.1s;
+}
+
+.dpad [data-dir="up"] { grid-area: up; }
+.dpad [data-dir="left"] { grid-area: left; }
+.dpad [data-dir="down"] { grid-area: down; }
+.dpad [data-dir="right"] { grid-area: right; }
+
+.dpad button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.dpad button:active,
+.dpad button.is-pressed {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+    scale: 0.94;
+}
+
+.dpad svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.keys-hint {
+    grid-area: hint;
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+    color: var(--ink-soft);
+}
+
+.legend {
+    grid-area: legend;
+    display: grid;
+    gap: 3px;
+    margin: 0;
+    padding: 10px 14px;
+    list-style: none;
+    font-size: 13px;
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+}
+
+.legend li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.legend small {
+    color: var(--ink-soft);
+}
+
+.legend em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.legend .legend-note {
+    font-size: 12px;
+    color: var(--ink-soft);
+}
+
+.actions {
+    grid-area: actions;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* ==========================================================
+   Overlays: loading screen, difficulty menu and results
+   ========================================================== */
+.overlay {
+    position: relative;
+    z-index: 30;
+    display: grid;
+    padding: 16px;
+    background: rgba(244, 241, 236, 0.7);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    animation: fade-in 250ms ease both;
+}
+
+.sheet {
+    width: min(640px, 100%);
+    margin: auto;
+    padding: 28px;
+    text-align: center;
+    background: var(--paper);
+    border: 1px solid var(--ink-line);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px -30px rgba(29, 29, 31, 0.45);
+    animation: sheet-in 320ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.gem-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 4px 0 18px;
+}
+
+.mini-gem {
+    width: 14px;
+    height: 14px;
+    background: var(--gem);
+    border-radius: 4px;
+    rotate: 45deg;
+    animation:
+        gem-in 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both,
+        gem-bob 2.4s ease-in-out infinite;
+    animation-delay:
+        calc(var(--i) * 110ms),
+        calc(var(--i) * 110ms + 500ms);
+}
+
+.sheet h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-head);
+    font-size: clamp(30px, 6vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+}
+
+.sheet h1 span {
+    color: var(--accent);
+}
+
+.tagline {
+    max-width: 44ch;
+    margin: 0 auto 20px;
+    color: var(--ink-soft);
+}
+
+.loader {
+    max-width: 280px;
+    margin: 8px auto 4px;
+}
+
+.loader p {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.overlay[data-stage="loading"] .menu,
+.overlay[data-stage="menu"] .loader {
+    display: none;
+}
+
+.menu {
+    display: grid;
+    gap: 14px;
+    animation: fade-up 300ms ease both;
+}
+
+.levels {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.levels legend {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.level-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.level {
+    position: relative;
+    cursor: pointer;
+}
+
+.level input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.level-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: 100%;
+    padding: 14px;
+    text-align: left;
+    border: 1.5px solid var(--ink-line);
+    border-radius: 14px;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.level:hover .level-body {
+    border-color: var(--ink-faint);
+}
+
+.level input:checked + .level-body {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.level input:focus-visible + .level-body {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.level-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.pips {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.pips i {
+    width: 6px;
+    height: 12px;
+    background: var(--ink-line);
+    border-radius: 2px;
+}
+
+.pips[data-level="1"] i:nth-child(-n + 1),
+.pips[data-level="2"] i:nth-child(-n + 2),
+.pips[data-level="3"] i:nth-child(-n + 3) {
+    background: var(--accent);
+}
+
+.level-desc {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+}
+
+.level-best {
+    margin-top: auto;
+    padding-top: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.level-best:empty {
+    display: none;
+}
+
+.how {
+    padding: 0 14px;
+    font-size: 14px;
+    text-align: left;
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+}
+
+.how summary {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+}
+
+.how summary::-webkit-details-marker {
+    display: none;
+}
+
+.how summary::after {
+    content: "+";
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.how[open] summary::after {
+    content: "\2013";
+}
+
+.how ul {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 12px;
+    padding-left: 18px;
+    color: var(--ink-soft);
+}
+
+.menu .btn-primary {
+    justify-self: center;
+    min-width: 200px;
+}
+
+/* Results */
+.sheet.result {
+    width: min(460px, 100%);
+}
+
+.result h2 {
+    margin: 0 0 6px;
+    font-family: var(--font-head);
+    font-size: clamp(28px, 5vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.result.is-win h2 {
+    color: var(--accent);
+}
+
+.result-line {
+    margin: 0 0 16px;
+    color: var(--ink-soft);
+}
+
+.new-best {
+    display: inline-block;
+    margin: -4px 0 16px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 999px;
+    animation: slot-pop 400ms cubic-bezier(0.2, 1.6, 0.4, 1) 300ms both;
+}
+
+.result-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.result-side {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 14px;
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+}
+
+.result-who {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.result-side strong {
+    font-family: var(--font-head);
+    font-size: 32px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.result-side.player.is-winner {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+
+.result-side.cpu.is-winner {
+    background: rgba(29, 29, 31, 0.05);
+    border-color: var(--ink);
+}
+
+.result-stats {
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 13px;
+    border-collapse: collapse;
+}
+
+.result-stats th,
+.result-stats td {
+    padding: 7px 8px;
+    text-align: center;
+    border-top: 1px solid var(--ink-line);
+}
+
+.result-stats thead th {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-top: 0;
+}
+
+.result-stats tbody th {
+    font-weight: 400;
+    text-align: left;
+    color: var(--ink-soft);
+}
+
+.result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* ==========================================================
+   Animations
+   ========================================================== */
+@keyframes tile-in { from { opacity: 0; scale: 0.5; } }
+@keyframes piece-in { from { opacity: 0; scale: 0; } }
+@keyframes spawn { from { opacity: 0; scale: 0; } }
+@keyframes collect { 30% { scale: 1.3; } to { opacity: 0; scale: 0.2; } }
+@keyframes hint { 50% { scale: 1.1; } }
+@keyframes hop { 40% { scale: 1.12 0.9; } 70% { scale: 0.96 1.05; } }
+@keyframes blink { 0%, 95%, 100% { scale: 1 1; } 97% { scale: 1 0.1; } }
+@keyframes ring { 0%, 100% { opacity: 0.4; scale: 1; } 50% { opacity: 0.1; scale: 1.12; } }
+@keyframes think { 0%, 60%, 100% { opacity: 0.4; translate: 0 0; } 30% { opacity: 1; translate: 0 -3px; } }
+@keyframes slot-pop { from { scale: 0.4; } }
+@keyframes slot-flash { 25% { scale: 1.18; box-shadow: 0 0 0 3px var(--accent-soft); } }
+@keyframes score-pop { 20% { scale: 1.15; color: var(--accent); } }
+@keyframes toast-in { from { opacity: 0; translate: -50% -8px; } }
+@keyframes toast-drop { from { opacity: 0; translate: 0 -8px; } }
+@keyframes toast-out { to { opacity: 0; scale: 0.9; } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-up { from { opacity: 0; translate: 0 8px; } }
+@keyframes sheet-in { from { opacity: 0; translate: 0 12px; scale: 0.98; } }
+@keyframes gem-in { from { opacity: 0; scale: 0; } }
+@keyframes gem-bob { 50% { translate: 0 -4px; } }
+
+@keyframes bump {
+    30% { translate: calc(var(--bx) * 16%) calc(var(--by) * 16%); }
+    60% { translate: calc(var(--bx) * -4%) calc(var(--by) * -4%); }
+}
+
+@keyframes float-up {
+    0% { opacity: 0; transform: translateY(10%) scale(0.7); }
+    15% { opacity: 1; transform: translateY(-20%) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-150%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+    }
+}
+
+/* ==========================================================
+   Narrow screens: scores on top, board, then controls
+   ========================================================== */
+@media (max-width: 719px) {
+    body {
+        padding: 16px 12px;
+    }
+
+    .game {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+        grid-template-areas:
+            "hud"
+            "board"
+            "controls";
+        gap: 12px;
+    }
+
+    .board-area {
+        justify-self: center;
+        width: 100%;
+        max-width: 560px;
+    }
+
+    .hud {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .round {
+        grid-column: 1 / -1;
+    }
+
+    .scorecard {
+        padding: 10px 12px;
+    }
+
+    .score {
+        font-size: 22px;
+    }
+
+    .bag {
+        margin-top: 8px;
+    }
+
+    .bag-label {
+        display: none;
+    }
+
+    .slot {
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
+    }
+
+    .controls {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+            "dpad    legend"
+            "actions actions";
+        align-items: center;
+        gap: 12px 16px;
+    }
+
+    .keys-hint {
+        display: none;
+    }
+
+    .legend {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .level-options {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .level-body {
+        padding: 10px 14px;
+    }
+
+    .sheet {
+        padding: 22px 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .board {
+        --gap: 3px;
+        --pad: 5px;
+        border-radius: 14px;
+    }
+
+    .dpad {
+        grid-template-columns: repeat(3, 40px);
+        grid-template-rows: repeat(2, 40px);
+    }
+}

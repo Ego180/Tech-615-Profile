@@ -1,0 +1,5 @@
+# Readable game source and its build tools stay on this machine only.
+# The site loads the obfuscated COMP284-21 (1)/numbers.js built from it.
+COMP284-21 (1)/src/
+
+node_modules/
